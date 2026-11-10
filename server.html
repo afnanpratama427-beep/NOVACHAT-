@@ -1,0 +1,41 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>SERVER - NanzzDev Only</title>
+<style>:root{--y:#FFE066;--b:3.5px solid #000;--s:6px 6px 0 #000}*{box-sizing:border-box;margin:0;padding:0;font-family:sans-serif}body{background:#FFF8E7;padding:16px}h1{font-size:28px;background:var(--y);border:var(--b);box-shadow:var(--s);padding:8px 14px;display:inline-block;transform:rotate(-2deg)}.card{background:#fff;border:var(--b);box-shadow:var(--s);padding:16px;margin-top:16px}.db-row{display:flex;border:2.5px solid #000;margin-top:8px}.db-col{flex:1;padding:10px;border-right:2.5px solid #000;word-break:break-all;font-size:13px}.btn{padding:10px 16px;border:var(--b);box-shadow:3px 3px 0 #000;font-weight:900;cursor:pointer;margin-top:8px}
+</style></head><body>
+<h1>NOVACHAT SERVER</h1><p style="font-size:12px;font-weight:900;margin-top:8px">DATABASE BERSIH - Cuma NanzzDev 👑 - Auto 3s - Tanpa Login - FIXED</p>
+<div class="card">
+<div style="display:flex;font-weight:900;background:var(--y);border:2.5px solid #000"><div class="db-col" style="border:none">USERNAME</div><div class="db-col" style="border:none;border-left:2.5px solid #000">PASSWORD</div></div>
+<div id="dbList">Loading...</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+<button class="btn" style="background:var(--y)" onclick="loadDB()">↻ REFRESH</button>
+<button class="btn" style="background:#B8FF9F" onclick="downloadTxt()">DOWNLOAD user.txt</button>
+<button class="btn" style="background:#FF8A8A" onclick="resetAll()">⚠️ RESET SEMUA KECUALI NanzzDev</button>
+</div>
+<div id="auto" style="font-size:11px;opacity:.6;margin-top:8px">↻ auto 3s on</div>
+<div id="info" style="font-size:11px;margin-top:8px;color:#666"></div>
+</div>
+<script>
+async function loadDB(){
+  const list=document.getElementById('dbList');
+  const info=document.getElementById('info');
+  try{
+    const r=await fetch('/api/users');
+    if(!r.ok) throw new Error('Server belum Run');
+    const d=await r.json();
+    if(!d || d.length===0){
+      list.innerHTML=`<div class="db-row"><div class="db-col" style="font-weight:900">NanzzDev 👑</div><div class="db-col" style="background:#000;color:#FFE066">NanzzProject1</div></div>`;
+      info.textContent='user.txt kosong, auto tampil NanzzDev';
+      document.getElementById('auto').textContent='↻ '+new Date().toLocaleTimeString()+' - 1 akun (NanzzDev)';
+      return;
+    }
+    list.innerHTML=d.map(u=>`<div class="db-row"><div class="db-col" style="font-weight:900">${u.username} ${u.username==='NanzzDev'?'👑':''}</div><div class="db-col" style="background:#000;color:#FFE066">${u.password}</div></div>`).join('');
+    document.getElementById('auto').textContent='↻ '+new Date().toLocaleTimeString()+' - '+d.length+' akun';
+    info.textContent='Server OK ✅';
+  }catch(e){
+    list.innerHTML=`<div style="padding:12px;border:2.5px solid #000;background:#ffd1d1;margin-top:8px"><b>⚠️ Server belum RUN di Replit!</b><br>1. Buka Replit<br>2. Klik tombol Run ▶️ di atas<br>3. Tunggu log: NOVACHAT JALAN 3000<br>4. Buka lagi via link https://....replit.co/server.html<br><br>Error: ${e.message}<br><br><b>Sementara tampil:</b><div class="db-row"><div class="db-col" style="font-weight:900">NanzzDev 👑</div><div class="db-col" style="background:#000;color:#FFE066">NanzzProject1</div></div></div>`;
+    info.textContent='Buka lewat Replit Webview, jangan about:blank';
+  }
+}
+function downloadTxt(){fetch('/api/users').then(r=>r.json()).then(d=>{const txt=d.map(u=>`${u.username}|${u.password}`).join('\n')||'NanzzDev|NanzzProject1';const b=new Blob([txt],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='user.txt';a.click()}).catch(()=>{const txt='NanzzDev|NanzzProject1';const b=new Blob([txt],{type:'text/plain'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='user.txt';a.click()})}
+async function resetAll(){if(confirm('Yakin reset semua kecuali NanzzDev?')){try{await fetch('/api/reset-all');}catch{} loadDB(); alert('Bersih! Cuma NanzzDev sisa')}}
+loadDB(); setInterval(loadDB,3000);
+</script></body></html>
